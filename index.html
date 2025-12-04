@@ -13,17 +13,55 @@
             width: 100%;
             overflow: hidden;
         }
+
         video {
             width: 100%;
             height: 100%;
             object-fit: contain;
             background: #000;
+
+            /* Fade-in animation */
+            opacity: 0;
+            animation: fadein 1.8s forwards ease-in;
+        }
+
+        @keyframes fadein {
+            from { opacity: 0; }
+            to   { opacity: 1; }
         }
     </style>
 </head>
 <body>
-    <video autoplay muted loop playsinline controls>
-        <source src="https://cdn.leonardo.ai/users/b638bced-d302-45bf-aa3f-81f00a3ad378/generations/5d9d64e4-8b43-4036-a728-9093467dae73/segments/1:1:1/veo30generatepreview_The_man_in_the_image_magically_morphs_int_0.mp4" type="video/mp4">
+
+    <video id="vid" autoplay playsinline controls>
+        <source src="https://cdn.leonardo.ai/users/b638bced-d302-45bf-aa3f-81f00a3ad378/generations/a5e9d1b3-d2a5-45d6-a3d5-f59a7dd9d824/a5e9d1b3-d2a5-45d6-a3d5-f59a7dd9d824.mp4" type="video/mp4">
     </video>
+
+    <script>
+        const video = document.getElementById("vid");
+
+        // Try autoplay with sound
+        video.muted = false;
+        video.volume = 1.0;
+
+        // Some TV browsers block autoplay with sound
+        // This ensures sound is enabled once video is allowed to start
+        video.addEventListener("play", () => {
+            video.muted = false;
+        });
+
+        // If autoplay is blocked, try again when metadata loads
+        video.addEventListener("loadedmetadata", () => {
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {
+                    // If it fails, attempt to force play with sound
+                    video.muted = false;
+                    video.play();
+                });
+            }
+        });
+    </script>
+
 </body>
 </html>
